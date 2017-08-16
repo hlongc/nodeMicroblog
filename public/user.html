@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 71px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">微博</a>
+            </div>
+            <!--/.navbar-collapse -->
+            <form class="navbar-form navbar-right">
+                <a class="btn btn-info" href="login.html" role="button">Sign in</a>
+            </form>
+        </div>
+    </nav>
+    <div class="container" id="app">
+        <h1>你好O(∩_∩)O哈哈~<span class="bg-info">{{uname}}</span></h1>
+    </div>
+
+
+    <script src="./js/jquery-3.1.0.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                uname: "",
+                articles: []
+            },
+            mounted: function() {
+                var name = this.getQueryString();
+                this.uname = name;
+                vart that = this;
+                $.get('/getUserArticles/' + name, function(result) {
+                    that.articles = result;
+                })
+            },
+            methods: {
+                getQueryString: function() {
+                    var index = window.location.search.indexOf("=");
+                    var res = window.location.search.slice(index + 1);
+                    return decodeURI(res);
+                }
+            }
+        })
+
+    </script>
+</body>
+
+</html>

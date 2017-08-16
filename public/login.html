@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 71px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">微博</a>
+            </div>
+            <!--/.navbar-collapse -->
+
+            <form class="navbar-form navbar-right">
+                <a class="btn btn-info" href="resgist.html" role="button">regist</a>
+            </form>
+        </div>
+    </nav>
+    <div class="container" id="app">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>登录</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Name</label>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" id="name" placeholder="name" name="name" v-model.lazy="uname" @blur="yanzheng" @focus="hideWarn">
+                            </div>
+                            <div class="col-md-3">
+                                <span v-show="isShow" class="text-danger text-center" id="tishi">该账号不存在</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <input type="password" class="form-control" id="password" placeholder="password" v-model.lazy="upwd">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" name="agree" id="agree">
+                        <label for="agree">Check me out</label>
+                    </div>
+                    <p v-show="showWarn" class="text-danger">请修改用户名以后再登录!</p>
+                    <div v-show="mmcw" class="alert alert-danger" role="alert">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span> 密码错误!
+                    </div>
+                    <button type="button" class="btn btn-default" id="submit" @click="login">Sign in</button>
+                </form>
+            </div>
+        </div>
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="width:350px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">恭喜你登录成功!</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary">确定</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal -->
+        </div>
+    </div>
+
+
+    <script src="./js/jquery-3.1.0.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                uname: "",
+                upwd: "",
+                isShow: false,
+                times: 3000,
+                showWarn: false,
+                mmcw: false
+            },
+            methods: {
+                yanzheng: function() {
+                    var that = this;
+                    $.post('/yzxm', {
+                        "name": this.uname
+                    }, function(result) {
+                        if (result) {
+                            that.isShow = false;
+                        } else {
+                            that.isShow = true;
+                        }
+                    })
+                },
+                login: function() {
+                    var that = this;
+                    if (this.isShow) {
+                        this.showWarn = true;
+                        return;
+                    }
+                    $.post('/login', {
+                        "name": this.uname,
+                        "pwd": this.upwd
+                    }, function(result) {
+                        console.log(result);
+                        if (result.length == 0) {
+                            that.mmcw = true;
+                            return;
+                        }
+                        that.uname = "";
+                        that.upwd = "";
+                        that.isShow = false;
+                        $("#myModal").modal('show');
+                        setTimeout(function() {
+                            window.location = "http://127.0.0.1:4000";
+                        }, 1000);
+                    })
+                },
+                hideWarn: function() {
+                    this.showWarn = false;
+                    this.mmcw = false;
+                }
+            }
+        })
+
+    </script>
+</body>
+
+</html>
